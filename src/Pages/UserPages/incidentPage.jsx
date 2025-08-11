@@ -15,7 +15,9 @@ const IncidentDetails = () => {
     const fetchIncident = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:4000/api/incident/${id}`);
+        const response = await fetch(
+          `https://hindincident.onrender.com/api/incident/${id}`
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch incident");
         }
@@ -72,11 +74,14 @@ const IncidentDetails = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:4000/api/incident/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `https://hindincident.onrender.com/api/incident/${id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
       if (!response.ok) {
         throw new Error("Failed to update incident");
       }
@@ -116,7 +121,9 @@ const IncidentDetails = () => {
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Incident ID</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Incident ID
+                </label>
                 <input
                   type="text"
                   value={incident.IncidentID}
@@ -125,29 +132,40 @@ const IncidentDetails = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Incident Date</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Incident Date
+                </label>
                 <input
                   type="date"
-                  value={new Date(incident.IncidentDate).toISOString().split("T")[0]}
+                  value={
+                    new Date(incident.IncidentDate).toISOString().split("T")[0]
+                  }
                   className="w-full px-3 py-2 border border-gray-300 bg-gray-100"
                   disabled
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Incident Time</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Incident Time
+                </label>
                 <input
                   type="time"
-                  value={new Date(incident.IncidentTime).toLocaleTimeString("en-GB", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                  })}
+                  value={new Date(incident.IncidentTime).toLocaleTimeString(
+                    "en-GB",
+                    {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    }
+                  )}
                   className="w-full px-3 py-2 border border-gray-300 bg-gray-100"
                   disabled
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Location</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Location
+                </label>
                 <input
                   type="text"
                   name="Location"
@@ -157,7 +175,9 @@ const IncidentDetails = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Weather Condition</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Weather Condition
+                </label>
                 <input
                   type="text"
                   name="WeatherCondition"
@@ -167,7 +187,9 @@ const IncidentDetails = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Shift In Charge</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Shift In Charge
+                </label>
                 <input
                   type="text"
                   name="HTPLShiftInCharge"
@@ -177,7 +199,9 @@ const IncidentDetails = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Contractor Supervisor</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Contractor Supervisor
+                </label>
                 <input
                   type="text"
                   name="ContractorSupervisor"
@@ -187,7 +211,9 @@ const IncidentDetails = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Reported By</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Reported By
+                </label>
                 <input
                   type="text"
                   name="IncidentReportedBy"
@@ -197,7 +223,9 @@ const IncidentDetails = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Report Prepared By</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Report Prepared By
+                </label>
                 <input
                   type="text"
                   name="ReportPreparedBy"
@@ -207,7 +235,9 @@ const IncidentDetails = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Incident Title</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Incident Title
+                </label>
                 <input
                   type="text"
                   name="IncidentTitle"
@@ -218,7 +248,9 @@ const IncidentDetails = () => {
               </div>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Incident Summary</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Incident Summary
+              </label>
               <textarea
                 name="IncidentSummary"
                 value={formData.IncidentSummary}
@@ -370,7 +402,9 @@ const IncidentDetails = () => {
               </div>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Injured Employees</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Injured Employees
+              </label>
               <div className="border border-gray-300 p-3 bg-gray-100">
                 {incident.InjuredHTPLEmployees.map((employee, index) => (
                   <div key={index} className="mb-2">
@@ -380,15 +414,23 @@ const IncidentDetails = () => {
                     <p>Age: {employee.age}</p>
                     <p>Sex: {employee.sex}</p>
                     <p>Contact: {employee.contact_number}</p>
-                    {employee.injury_type && <p>Injury Type: {employee.injury_type}</p>}
-                    {employee.medical_attention && <p>Medical Attention: {employee.medical_attention}</p>}
+                    {employee.injury_type && (
+                      <p>Injury Type: {employee.injury_type}</p>
+                    )}
+                    {employee.medical_attention && (
+                      <p>Medical Attention: {employee.medical_attention}</p>
+                    )}
                   </div>
                 ))}
-                {incident.InjuredHTPLEmployees.length === 0 && <p>No injured employees</p>}
+                {incident.InjuredHTPLEmployees.length === 0 && (
+                  <p>No injured employees</p>
+                )}
               </div>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Injured Contract Workers</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Injured Contract Workers
+              </label>
               <div className="border border-gray-300 p-3 bg-gray-100">
                 {incident.InjuredContractWorkers.map((worker, index) => (
                   <div key={index} className="mb-2">
@@ -400,11 +442,15 @@ const IncidentDetails = () => {
                     <p>Contact: {worker.contact_number}</p>
                   </div>
                 ))}
-                {incident.InjuredContractWorkers.length === 0 && <p>No injured contract workers</p>}
+                {incident.InjuredContractWorkers.length === 0 && (
+                  <p>No injured contract workers</p>
+                )}
               </div>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Injured Visitors</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Injured Visitors
+              </label>
               <div className="border border-gray-300 p-3 bg-gray-100">
                 {incident.InjuredVisitors.map((visitor, index) => (
                   <div key={index} className="mb-2">
@@ -416,24 +462,30 @@ const IncidentDetails = () => {
                     <p>Contact: {visitor.contact_number}</p>
                   </div>
                 ))}
-                {incident.InjuredVisitors.length === 0 && <p>No injured visitors</p>}
+                {incident.InjuredVisitors.length === 0 && (
+                  <p>No injured visitors</p>
+                )}
               </div>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Uploaded Files</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Uploaded Files
+              </label>
               <div className="border border-gray-300 p-3 bg-gray-100">
                 {incident.UploadedFiles.map((file, index) => (
                   <div key={index}>{file.original_name || file}</div>
                 ))}
-                {incident.UploadedFiles.length === 0 && <p>No files uploaded</p>}
+                {incident.UploadedFiles.length === 0 && (
+                  <p>No files uploaded</p>
+                )}
               </div>
             </div>
 
             <div className="bg-blue-600 text-white text-center py-3">
-                <h3 className="text-xl font-bold">Action required</h3>
-              </div>
+              <h3 className="text-xl font-bold">Action required</h3>
+            </div>
 
-              <div className="border border-gray-300 p-3 mt-4">
+            <div className="border border-gray-300 p-3 mt-4">
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Training Type Required
               </label>
@@ -446,40 +498,52 @@ const IncidentDetails = () => {
                 <option value="">Select training type</option>
                 <option value="Safety Training">Safety Training</option>
                 <option value="First Aid Training">First Aid Training</option>
-                <option value="Fire Drill / Evacuation Training">Fire Drill / Evacuation Training</option>
-                <option value="Equipment Handling Training">Equipment Handling Training</option>
-                <option value="Hazard Awareness Training">Hazard Awareness Training</option>
-                <option value="Emergency Response Training">Emergency Response Training</option>
-                <option value="Incident Reporting Protocol">Incident Reporting Protocol</option>
-                <option value="Workplace Ergonomics Training">Workplace Ergonomics Training</option>
-                <option value="Chemical Handling Training">Chemical Handling Training</option>
+                <option value="Fire Drill / Evacuation Training">
+                  Fire Drill / Evacuation Training
+                </option>
+                <option value="Equipment Handling Training">
+                  Equipment Handling Training
+                </option>
+                <option value="Hazard Awareness Training">
+                  Hazard Awareness Training
+                </option>
+                <option value="Emergency Response Training">
+                  Emergency Response Training
+                </option>
+                <option value="Incident Reporting Protocol">
+                  Incident Reporting Protocol
+                </option>
+                <option value="Workplace Ergonomics Training">
+                  Workplace Ergonomics Training
+                </option>
+                <option value="Chemical Handling Training">
+                  Chemical Handling Training
+                </option>
                 <option value="Technical Training">Technical Training</option>
               </select>
             </div>
 
             <div className="border border-gray-300 p-3 mt-4">
-  <label className="block text-sm font-semibold text-gray-700 mb-1">
-    Assign Trainer
-  </label>
-  <select
-    name="assigned_trainer"
-    value={formData.assigned_trainer}
-    onChange={handleInputChange}
-    className="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="">-- Select Trainer --</option>
-    <option value="trainer_1">Trainer 1</option>
-    <option value="trainer_2">Trainer 2</option>
-    <option value="trainer_3">Trainer 3</option>
-    <option value="trainer_4">Trainer 4</option>
-  </select>
-  <p className="text-xs text-gray-500 mt-1">
-    Choose the trainer responsible for follow-up or corrective training related to this incident.
-  </p>
-</div>
-
-
-
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Assign Trainer
+              </label>
+              <select
+                name="assigned_trainer"
+                value={formData.assigned_trainer}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">-- Select Trainer --</option>
+                <option value="trainer_1">Trainer 1</option>
+                <option value="trainer_2">Trainer 2</option>
+                <option value="trainer_3">Trainer 3</option>
+                <option value="trainer_4">Trainer 4</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                Choose the trainer responsible for follow-up or corrective
+                training related to this incident.
+              </p>
+            </div>
 
             <div className="border border-gray-300 p-3 mt-4">
               <label className="block text-sm font-semibold text-gray-700 mb-1">

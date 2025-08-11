@@ -21,7 +21,9 @@ const MyRequests = () => {
     const fetchIncidents = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:4000/api/incidents");
+        const response = await fetch(
+          "https://hindincident.onrender.com/api/incidents"
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch incidents");
         }
@@ -44,14 +46,16 @@ const MyRequests = () => {
   // Handle status change (Approve/Reject)
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await fetch(`http://localhost:4000/api/incident/${id}`, {
+      await fetch(`https://hindincident.onrender.com/api/incident/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
       });
       setRequests((prev) =>
         prev.map((request) =>
-          request.IncidentID === id ? { ...request, status: newStatus } : request
+          request.IncidentID === id
+            ? { ...request, status: newStatus }
+            : request
         )
       );
     } catch (err) {
@@ -88,23 +92,33 @@ const MyRequests = () => {
         {/* Header Section */}
         <div className="bg-white border-2 border-gray-300 mb-6">
           <div className="bg-blue-600 text-white text-center py-3">
-            <h1 className="text-2xl font-bold">Hind Terminals Pvt Ltd - Palwal</h1>
+            <h1 className="text-2xl font-bold">
+              Hind Terminals Pvt Ltd - Palwal
+            </h1>
             <h2 className="text-lg">Incident Report - Approval System</h2>
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <div className="border border-gray-300 p-3">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Total Incidents</label>
-                <div className="text-2xl font-bold text-blue-600">{requests.length}</div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Total Incidents
+                </label>
+                <div className="text-2xl font-bold text-blue-600">
+                  {requests.length}
+                </div>
               </div>
               <div className="border border-gray-300 p-3">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Pending Approval</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Pending Approval
+                </label>
                 <div className="text-2xl font-bold text-yellow-600">
                   {requests.filter((r) => r.status === "Pending").length}
                 </div>
               </div>
               <div className="border border-gray-300 p-3">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Approved Today</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Approved Today
+                </label>
                 <div className="text-2xl font-bold text-green-600">
                   {requests.filter((r) => r.status === "Approved").length}
                 </div>
@@ -124,7 +138,9 @@ const MyRequests = () => {
           <div className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="border border-gray-300 p-3">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Status Filter</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Status Filter
+                </label>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
@@ -218,13 +234,25 @@ const MyRequests = () => {
                         </span>
                       </td>
                       <td className="border border-gray-300 px-3 py-2 text-sm">
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${getRiskColor(request.TypeInjury)}`}>
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-medium ${getRiskColor(
+                            request.TypeInjury
+                          )}`}
+                        >
                           {request.TypeInjury ? "High" : "Low"}
                         </span>
                       </td>
                       <td className="border border-gray-300 px-3 py-2 text-sm">
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(request.CountInjury)}`}>
-                          {request.CountInjury > 1 ? "High" : request.CountInjury === 1 ? "Medium" : "Low"}
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(
+                            request.CountInjury
+                          )}`}
+                        >
+                          {request.CountInjury > 1
+                            ? "High"
+                            : request.CountInjury === 1
+                            ? "Medium"
+                            : "Low"}
                         </span>
                       </td>
                       <td className="border border-gray-300 px-3 py-2 text-sm">
@@ -252,14 +280,24 @@ const MyRequests = () => {
                           {request.status === "Pending" && (
                             <>
                               <button
-                                onClick={() => handleStatusChange(request.IncidentID, "Approved")}
+                                onClick={() =>
+                                  handleStatusChange(
+                                    request.IncidentID,
+                                    "Approved"
+                                  )
+                                }
                                 className="flex items-center px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition-colors"
                               >
                                 <CheckCircle className="w-3 h-3 mr-1" />
                                 Approve
                               </button>
                               <button
-                                onClick={() => handleStatusChange(request.IncidentID, "Rejected")}
+                                onClick={() =>
+                                  handleStatusChange(
+                                    request.IncidentID,
+                                    "Rejected"
+                                  )
+                                }
                                 className="flex items-center px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700 transition-colors"
                               >
                                 <XCircle className="w-3 h-3 mr-1" />

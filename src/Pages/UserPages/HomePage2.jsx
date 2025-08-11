@@ -1,25 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Cloud, User, FileText, Upload, X, AlertCircle, Save, Printer, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Cloud,
+  User,
+  FileText,
+  Upload,
+  X,
+  AlertCircle,
+  Save,
+  Printer,
+  CheckCircle,
+} from "lucide-react";
 import hindLogo from "../../Assets/hindimg.png";
 
 function IncidentReportForm() {
   const [formData, setFormData] = useState({
     // Basic Info
-    incident_date: '',
-    incident_time: '',
-    location: '',
-    weather_condition: '',
-    
+    incident_date: "",
+    incident_time: "",
+    location: "",
+    weather_condition: "",
+
     // Personnel Info
-    htpl_shift_in_charge: '',
-    contractor_supervisor: '',
-    incident_reported_by: '',
-    report_prepared_by: '',
-    
+    htpl_shift_in_charge: "",
+    contractor_supervisor: "",
+    incident_reported_by: "",
+    report_prepared_by: "",
+
     // Incident Details
-    incident_title: '',
-    incident_summary: '',
-    
+    incident_title: "",
+    incident_summary: "",
+
     // Type of Incident
     type_injury: false,
     count_injury: 0,
@@ -35,26 +48,26 @@ function IncidentReportForm() {
     count_fatality: 0,
     type_other: false,
     count_other: 0,
-    
+
     // Injured Person Details
     injured_htpl_employees: [],
     injured_contract_workers: [],
     injured_visitors: [],
-    
+
     // Files
-    uploaded_files: []
+    uploaded_files: [],
   });
 
-  const [activeTab, setActiveTab] = useState('htpl');
+  const [activeTab, setActiveTab] = useState("htpl");
   const [uploadErrors, setUploadErrors] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', or null
-  const [submitMessage, setSubmitMessage] = useState('');
+  const [submitMessage, setSubmitMessage] = useState("");
 
   // Cleanup object URLs to prevent memory leaks
   useEffect(() => {
     return () => {
-      formData.uploaded_files.forEach(fileObj => {
+      formData.uploaded_files.forEach((fileObj) => {
         if (fileObj.preview) {
           URL.revokeObjectURL(fileObj.preview);
         }
@@ -64,54 +77,60 @@ function IncidentReportForm() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleCheckboxChange = (field) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: !prev[field]
+      [field]: !prev[field],
     }));
   };
 
   const handleCountChange = (field, value) => {
     const count = Math.max(0, parseInt(value) || 0);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: count
+      [field]: count,
     }));
   };
 
   const handleInjuredPersonChange = (category, index, field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [category]: prev[category].map((person, i) =>
         i === index ? { ...person, [field]: value } : person
-      )
+      ),
     }));
   };
 
   const handleNumberOfInjuredChange = (category, value) => {
     const count = Math.max(0, parseInt(value) || 0);
-    const categoryKey = category === 'htpl' ? 'injured_htpl_employees' : 
-                       category === 'contract' ? 'injured_contract_workers' : 
-                       'injured_visitors';
-    
-    setFormData(prev => ({
+    const categoryKey =
+      category === "htpl"
+        ? "injured_htpl_employees"
+        : category === "contract"
+        ? "injured_contract_workers"
+        : "injured_visitors";
+
+    setFormData((prev) => ({
       ...prev,
-      [categoryKey]: Array(count).fill().map((_, i) => (
-        prev[categoryKey][i] || {
-          name: '',
-          id_no_gate_pass_no: '',
-          department: '',
-          age: '',
-          sex: '',
-          contact_number: ''
-        }
-      ))
+      [categoryKey]: Array(count)
+        .fill()
+        .map(
+          (_, i) =>
+            prev[categoryKey][i] || {
+              name: "",
+              id_no_gate_pass_no: "",
+              department: "",
+              age: "",
+              sex: "",
+              contact_number: "",
+            }
+        ),
     }));
   };
 
@@ -131,86 +150,91 @@ function IncidentReportForm() {
           original_name: file.name,
           size: file.size,
           type: file.type,
-          preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : null
+          preview: file.type.startsWith("image/")
+            ? URL.createObjectURL(file)
+            : null,
         });
       }
     });
 
     setUploadErrors(errors);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      uploaded_files: [...prev.uploaded_files, ...validFiles]
+      uploaded_files: [...prev.uploaded_files, ...validFiles],
     }));
 
-    e.target.value = '';
+    e.target.value = "";
   };
 
   const removeFile = (fileId) => {
-    setFormData(prev => {
-      const fileToRemove = prev.uploaded_files.find(f => f.id === fileId);
+    setFormData((prev) => {
+      const fileToRemove = prev.uploaded_files.find((f) => f.id === fileId);
       if (fileToRemove?.preview) {
         URL.revokeObjectURL(fileToRemove.preview);
       }
       return {
         ...prev,
-        uploaded_files: prev.uploaded_files.filter(f => f.id !== fileId)
+        uploaded_files: prev.uploaded_files.filter((f) => f.id !== fileId),
       };
     });
   };
 
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
-    setSubmitMessage('');
+    setSubmitMessage("");
 
     try {
       // Prepare the data for submission
       const submissionData = {
         ...formData,
         // Convert file objects to simplified format for JSON serialization
-        uploaded_files: formData.uploaded_files.map(fileObj => ({
+        uploaded_files: formData.uploaded_files.map((fileObj) => ({
           original_name: fileObj.original_name,
           size: fileObj.size,
-          type: fileObj.type
-        }))
+          type: fileObj.type,
+        })),
       };
 
       // In a real application, you would send this to your backend
-      const response = await fetch('http://localhost:4000/api/incidents', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(submissionData)
-      });
+      const response = await fetch(
+        "https://hindincident.onrender.com/api/incidents",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(submissionData),
+        }
+      );
 
       if (response.ok) {
         const result = await response.json();
-        setSubmitStatus('success');
-        setSubmitMessage('Incident report submitted successfully!');
-        
+        setSubmitStatus("success");
+        setSubmitMessage("Incident report submitted successfully!");
+
         // Reset form after successful submission
         setTimeout(() => {
           setFormData({
-            incident_date: '',
-            incident_time: '',
-            location: '',
-            weather_condition: '',
-            htpl_shift_in_charge: '',
-            contractor_supervisor: '',
-            incident_reported_by: '',
-            report_prepared_by: '',
-            incident_title: '',
-            incident_summary: '',
+            incident_date: "",
+            incident_time: "",
+            location: "",
+            weather_condition: "",
+            htpl_shift_in_charge: "",
+            contractor_supervisor: "",
+            incident_reported_by: "",
+            report_prepared_by: "",
+            incident_title: "",
+            incident_summary: "",
             type_injury: false,
             count_injury: 0,
             type_property_damage: false,
@@ -228,19 +252,21 @@ function IncidentReportForm() {
             injured_htpl_employees: [],
             injured_contract_workers: [],
             injured_visitors: [],
-            uploaded_files: []
+            uploaded_files: [],
           });
           setSubmitStatus(null);
-          setSubmitMessage('');
+          setSubmitMessage("");
         }, 3000);
       } else {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to submit report');
+        throw new Error(error.message || "Failed to submit report");
       }
     } catch (error) {
-      console.error('Submission error:', error);
-      setSubmitStatus('error');
-      setSubmitMessage(error.message || 'Failed to submit incident report. Please try again.');
+      console.error("Submission error:", error);
+      setSubmitStatus("error");
+      setSubmitMessage(
+        error.message || "Failed to submit incident report. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -251,28 +277,40 @@ function IncidentReportForm() {
   };
 
   const incidentTypes = [
-    { key: 'type_injury', label: 'Injury', count: 'count_injury' },
-    { key: 'type_property_damage', label: 'Property Damage', count: 'count_property_damage' },
-    { key: 'type_fire', label: 'Fire', count: 'count_fire' },
-    { key: 'type_near_miss', label: 'Near Miss', count: 'count_near_miss' },
-    { key: 'type_environment', label: 'Environment', count: 'count_environment' },
-    { key: 'type_fatality', label: 'Fatality', count: 'count_fatality' },
-    { key: 'type_other', label: 'Other', count: 'count_other' }
+    { key: "type_injury", label: "Injury", count: "count_injury" },
+    {
+      key: "type_property_damage",
+      label: "Property Damage",
+      count: "count_property_damage",
+    },
+    { key: "type_fire", label: "Fire", count: "count_fire" },
+    { key: "type_near_miss", label: "Near Miss", count: "count_near_miss" },
+    {
+      key: "type_environment",
+      label: "Environment",
+      count: "count_environment",
+    },
+    { key: "type_fatality", label: "Fatality", count: "count_fatality" },
+    { key: "type_other", label: "Other", count: "count_other" },
   ];
 
   const tabConfig = [
-    { key: 'htpl', label: 'HTPL Employee', dataKey: 'injured_htpl_employees' },
-    { key: 'contract', label: 'Contract Worker', dataKey: 'injured_contract_workers' },
-    { key: 'visitors', label: 'Visitors', dataKey: 'injured_visitors' }
+    { key: "htpl", label: "HTPL Employee", dataKey: "injured_htpl_employees" },
+    {
+      key: "contract",
+      label: "Contract Worker",
+      dataKey: "injured_contract_workers",
+    },
+    { key: "visitors", label: "Visitors", dataKey: "injured_visitors" },
   ];
 
   const getCurrentTabData = () => {
-    const currentTab = tabConfig.find(tab => tab.key === activeTab);
+    const currentTab = tabConfig.find((tab) => tab.key === activeTab);
     return formData[currentTab.dataKey];
   };
 
   const getCurrentTabDataKey = () => {
-    const currentTab = tabConfig.find(tab => tab.key === activeTab);
+    const currentTab = tabConfig.find((tab) => tab.key === activeTab);
     return currentTab.dataKey;
   };
 
@@ -285,8 +323,12 @@ function IncidentReportForm() {
             <div className="flex items-center mb-4 lg:mb-0">
               <div className="flex items-center space-x-2">
                 <div className="flex items-center space-x-2">
-              <img src={hindLogo} alt="Hind Logo" className="h-12 w-auto object-contain" />
-            </div>
+                  <img
+                    src={hindLogo}
+                    alt="Hind Logo"
+                    className="h-12 w-auto object-contain"
+                  />
+                </div>
                 <span className="text-lg font-semibold text-gray-800"></span>
               </div>
             </div>
@@ -306,7 +348,9 @@ function IncidentReportForm() {
                   <span className="text-gray-800">03.10.2023</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-gray-600">Rev no & Date:</span>
+                  <span className="font-medium text-gray-600">
+                    Rev no & Date:
+                  </span>
                   <span className="text-gray-800">00</span>
                 </div>
               </div>
@@ -323,17 +367,23 @@ function IncidentReportForm() {
 
         {/* Success/Error Messages */}
         {submitStatus && (
-          <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
-            submitStatus === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
-          }`}>
-            {submitStatus === 'success' ? (
+          <div
+            className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
+              submitStatus === "success"
+                ? "bg-green-50 border border-green-200"
+                : "bg-red-50 border border-red-200"
+            }`}
+          >
+            {submitStatus === "success" ? (
               <CheckCircle className="w-5 h-5 text-green-500" />
             ) : (
               <AlertCircle className="w-5 h-5 text-red-500" />
             )}
-            <span className={`text-sm font-medium ${
-              submitStatus === 'success' ? 'text-green-800' : 'text-red-800'
-            }`}>
+            <span
+              className={`text-sm font-medium ${
+                submitStatus === "success" ? "text-green-800" : "text-red-800"
+              }`}
+            >
               {submitMessage}
             </span>
           </div>
@@ -350,7 +400,10 @@ function IncidentReportForm() {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="incident_date" className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <label
+                    htmlFor="incident_date"
+                    className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2"
+                  >
                     <Calendar className="w-4 h-4" />
                     Incident Date
                   </label>
@@ -365,7 +418,10 @@ function IncidentReportForm() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="incident_time" className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <label
+                    htmlFor="incident_time"
+                    className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2"
+                  >
                     <Clock className="w-4 h-4" />
                     Incident Time
                   </label>
@@ -380,7 +436,10 @@ function IncidentReportForm() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <label
+                    htmlFor="location"
+                    className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2"
+                  >
                     <MapPin className="w-4 h-4" />
                     Location
                   </label>
@@ -396,7 +455,10 @@ function IncidentReportForm() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="weather_condition" className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <label
+                    htmlFor="weather_condition"
+                    className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2"
+                  >
                     <Cloud className="w-4 h-4" />
                     Weather Condition
                   </label>
@@ -429,7 +491,10 @@ function IncidentReportForm() {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="htpl_shift_in_charge" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="htpl_shift_in_charge"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     HTPL Shift In Charge
                   </label>
                   <input
@@ -444,7 +509,10 @@ function IncidentReportForm() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="contractor_supervisor" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="contractor_supervisor"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Contractor Supervisor
                   </label>
                   <input
@@ -458,7 +526,10 @@ function IncidentReportForm() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="incident_reported_by" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="incident_reported_by"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Incident Reported By
                   </label>
                   <input
@@ -473,7 +544,10 @@ function IncidentReportForm() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="report_prepared_by" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="report_prepared_by"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Report Prepared By
                   </label>
                   <input
@@ -489,7 +563,10 @@ function IncidentReportForm() {
                 </div>
               </div>
               <div className="mt-6">
-                <label htmlFor="incident_title" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="incident_title"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Incident Title
                 </label>
                 <input
@@ -512,9 +589,14 @@ function IncidentReportForm() {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {incidentTypes.map(({ key, label, count }, index) => (
-                  <div key={key} className="flex items-center space-x-2 p-3 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
+                  <div
+                    key={key}
+                    className="flex items-center space-x-2 p-3 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
+                  >
                     <div className="flex items-center space-x-2 flex-1">
-                      <span className="text-sm font-medium text-gray-700">{index + 1}.</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        {index + 1}.
+                      </span>
                       <input
                         type="checkbox"
                         checked={formData[key]}
@@ -522,7 +604,10 @@ function IncidentReportForm() {
                         className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                         id={key}
                       />
-                      <label htmlFor={key} className="text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor={key}
+                        className="text-sm font-medium text-gray-700"
+                      >
                         {label}
                       </label>
                     </div>
@@ -530,7 +615,9 @@ function IncidentReportForm() {
                       <input
                         type="number"
                         value={formData[count]}
-                        onChange={(e) => handleCountChange(count, e.target.value)}
+                        onChange={(e) =>
+                          handleCountChange(count, e.target.value)
+                        }
                         className="w-full px-2 py-1 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm"
                         placeholder="Count"
                         min="0"
@@ -551,7 +638,11 @@ function IncidentReportForm() {
                   <button
                     key={tab.key}
                     type="button"
-                    className={`px-4 py-2 text-sm font-medium ${activeTab === tab.key ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'}`}
+                    className={`px-4 py-2 text-sm font-medium ${
+                      activeTab === tab.key
+                        ? "border-b-2 border-blue-500 text-blue-600"
+                        : "text-gray-600"
+                    }`}
                     onClick={() => setActiveTab(tab.key)}
                   >
                     {tab.label}
@@ -565,14 +656,19 @@ function IncidentReportForm() {
                 <input
                   type="number"
                   value={getCurrentTabData().length}
-                  onChange={(e) => handleNumberOfInjuredChange(activeTab, e.target.value)}
+                  onChange={(e) =>
+                    handleNumberOfInjuredChange(activeTab, e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   placeholder="Enter number"
                   min="0"
                 />
               </div>
               {getCurrentTabData().map((person, index) => (
-                <div key={index} className="mb-6 p-4 border border-gray-200 rounded-md">
+                <div
+                  key={index}
+                  className="mb-6 p-4 border border-gray-200 rounded-md"
+                >
                   <h4 className="text-sm font-medium text-gray-700 mb-4">
                     Person {index + 1}
                   </h4>
@@ -584,7 +680,14 @@ function IncidentReportForm() {
                       <input
                         type="text"
                         value={person.name}
-                        onChange={(e) => handleInjuredPersonChange(getCurrentTabDataKey(), index, 'name', e.target.value)}
+                        onChange={(e) =>
+                          handleInjuredPersonChange(
+                            getCurrentTabDataKey(),
+                            index,
+                            "name",
+                            e.target.value
+                          )
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         placeholder="Enter name"
                       />
@@ -596,7 +699,14 @@ function IncidentReportForm() {
                       <input
                         type="text"
                         value={person.id_no_gate_pass_no}
-                        onChange={(e) => handleInjuredPersonChange(getCurrentTabDataKey(), index, 'id_no_gate_pass_no', e.target.value)}
+                        onChange={(e) =>
+                          handleInjuredPersonChange(
+                            getCurrentTabDataKey(),
+                            index,
+                            "id_no_gate_pass_no",
+                            e.target.value
+                          )
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         placeholder="Enter ID or gate pass number"
                       />
@@ -608,7 +718,14 @@ function IncidentReportForm() {
                       <input
                         type="text"
                         value={person.department}
-                        onChange={(e) => handleInjuredPersonChange(getCurrentTabDataKey(), index, 'department', e.target.value)}
+                        onChange={(e) =>
+                          handleInjuredPersonChange(
+                            getCurrentTabDataKey(),
+                            index,
+                            "department",
+                            e.target.value
+                          )
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         placeholder="Enter department"
                       />
@@ -620,7 +737,14 @@ function IncidentReportForm() {
                       <input
                         type="number"
                         value={person.age}
-                        onChange={(e) => handleInjuredPersonChange(getCurrentTabDataKey(), index, 'age', e.target.value)}
+                        onChange={(e) =>
+                          handleInjuredPersonChange(
+                            getCurrentTabDataKey(),
+                            index,
+                            "age",
+                            e.target.value
+                          )
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         placeholder="Enter age"
                         min="0"
@@ -632,7 +756,14 @@ function IncidentReportForm() {
                       </label>
                       <select
                         value={person.sex}
-                        onChange={(e) => handleInjuredPersonChange(getCurrentTabDataKey(), index, 'sex', e.target.value)}
+                        onChange={(e) =>
+                          handleInjuredPersonChange(
+                            getCurrentTabDataKey(),
+                            index,
+                            "sex",
+                            e.target.value
+                          )
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                       >
                         <option value="">Select sex</option>
@@ -648,7 +779,14 @@ function IncidentReportForm() {
                       <input
                         type="tel"
                         value={person.contact_number}
-                        onChange={(e) => handleInjuredPersonChange(getCurrentTabDataKey(), index, 'contact_number', e.target.value)}
+                        onChange={(e) =>
+                          handleInjuredPersonChange(
+                            getCurrentTabDataKey(),
+                            index,
+                            "contact_number",
+                            e.target.value
+                          )
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         placeholder="Enter contact number"
                       />
@@ -664,7 +802,10 @@ function IncidentReportForm() {
                 Summary of the Incident
               </h3>
               <div>
-                <label htmlFor="incident_summary" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="incident_summary"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Incident Summary
                 </label>
                 <textarea
@@ -693,7 +834,8 @@ function IncidentReportForm() {
                     Click to upload files or drag and drop
                   </p>
                   <p className="text-sm text-gray-500 mb-4">
-                    Maximum file size: 4MB per file • Supported formats: Images, PDF, DOC, DOCX, TXT
+                    Maximum file size: 4MB per file • Supported formats: Images,
+                    PDF, DOC, DOCX, TXT
                   </p>
                   <input
                     id="file-upload"
@@ -714,7 +856,9 @@ function IncidentReportForm() {
                   <div className="bg-red-50 border border-red-200 rounded-md p-3">
                     <div className="flex items-center gap-2">
                       <AlertCircle className="w-5 h-5 text-red-500" />
-                      <h4 className="text-sm font-medium text-red-800">Upload Errors</h4>
+                      <h4 className="text-sm font-medium text-red-800">
+                        Upload Errors
+                      </h4>
                     </div>
                     <ul className="mt-2 text-sm text-red-700">
                       {uploadErrors.map((error, index) => (
@@ -730,7 +874,10 @@ function IncidentReportForm() {
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {formData.uploaded_files.map((fileObj) => (
-                        <div key={fileObj.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border">
+                        <div
+                          key={fileObj.id}
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border"
+                        >
                           {fileObj.preview ? (
                             <img
                               src={fileObj.preview}
@@ -770,8 +917,13 @@ function IncidentReportForm() {
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="flex flex-col sm:flex-row gap-4 justify-between">
                 <div className="text-sm text-gray-600">
-                  <p><strong>Prepared By:</strong> {formData.report_prepared_by || '_________________'}</p>
-                  <p className="mt-2"><strong>For:</strong> Hind Terminals Pvt Ltd - Palwal</p>
+                  <p>
+                    <strong>Prepared By:</strong>{" "}
+                    {formData.report_prepared_by || "_________________"}
+                  </p>
+                  <p className="mt-2">
+                    <strong>For:</strong> Hind Terminals Pvt Ltd - Palwal
+                  </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
@@ -789,7 +941,7 @@ function IncidentReportForm() {
                     disabled={isSubmitting}
                   >
                     <Save className="w-4 h-4" />
-                    {isSubmitting ? 'Submitting...' : 'Submit Report'}
+                    {isSubmitting ? "Submitting..." : "Submit Report"}
                   </button>
                 </div>
               </div>
