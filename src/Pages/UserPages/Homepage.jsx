@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Cloud, User, FileText, AlertTriangle, Save, Printer } from 'lucide-react';
+import { Calendar, Clock, MapPin, Cloud, User, FileText, AlertTriangle, Save, Printer, Upload, X, AlertCircle } from 'lucide-react';
 import logo from '../../Assets/hindimg.png'
+
 export default function IncidentReportForm() {
   const [formData, setFormData] = useState({
     incidentDate: '',
@@ -34,8 +35,11 @@ export default function IncidentReportForm() {
     department: '',
     ageSex: '',
     contactNumber: '',
-    incidentSummary: ''
+    incidentSummary: '',
+    files: []
   });
+
+  const [uploadErrors, setUploadErrors] = useState([]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -55,10 +59,86 @@ export default function IncidentReportForm() {
     }));
   };
 
+  const handleFileUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const maxSize = 4 * 1024 * 1024; // 4MB in bytes
+    const errors = [];
+    const validFiles = [];
+
+    files.forEach((file, index) => {
+      if (file.size > maxSize) {
+        errors.push(`File "${file.name}" exceeds 4MB limit`);
+      } else {
+        validFiles.push({
+          id: Date.now() + index,
+          file: file,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : null
+        });
+      }
+    });
+
+    setUploadErrors(errors);
+    setFormData(prev => ({
+      ...prev,
+      files: [...prev.files, ...validFiles]
+    }));
+
+    // Clear the input value to allow re-selecting the same file
+    e.target.value = '';
+  };
+
+  const removeFile = (fileId) => {
+    setFormData(prev => ({
+      ...prev,
+      files: prev.files.filter(f => f.id !== fileId)
+    }));
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Create FormData for file upload
+    const submitData = new FormData();
+    
+    // Add form fields
+    Object.keys(formData).forEach(key => {
+      if (key !== 'files' && key !== 'typeOfIncident' && key !== 'injuredPersonDetails') {
+        submitData.append(key, formData[key]);
+      }
+    });
+    
+    // Add checkbox data as JSON
+    submitData.append('typeOfIncident', JSON.stringify(formData.typeOfIncident));
+    submitData.append('injuredPersonDetails', JSON.stringify(formData.injuredPersonDetails));
+    
+    // Add files
+    formData.files.forEach((fileObj, index) => {
+      submitData.append(`files`, fileObj.file);
+    });
+    
     console.log('Form submitted:', formData);
     alert('Incident report submitted successfully!');
+    
+    // Example of how to send to server:
+    /*
+    fetch('/api/incident-report', {
+      method: 'POST',
+      body: submitData
+    }).then(response => response.json())
+      .then(data => console.log('Success:', data))
+      .catch(error => console.error('Error:', error));
+    */
   };
 
   const handlePrint = () => {
@@ -74,9 +154,9 @@ export default function IncidentReportForm() {
           <div className="flex flex-col lg:flex-row items-center justify-between p-6 border-b border-gray-200">
             {/* Logo Section */}
             <div className="flex items-center mb-4 lg:mb-0">
-            <div className="flex items-center space-x-2">
-              <img src={logo} alt="Hind Logo" className="h-12 w-auto object-contain" />
-          </div>
+              <div className="flex items-center space-x-2">
+                <img src={logo} alt="Hind Logo" className="h-12 w-auto object-contain" />
+              </div>
             </div>
 
             {/* Center Title */}
@@ -194,6 +274,98 @@ export default function IncidentReportForm() {
                 </select>
               </div>
             </div>
+                {/* File Upload Section */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <Upload className="w-5 h-5 text-purple-600" />
+              Supporting Documents & Images
+            </h3>
+            
+            <div className="space-y-4">
+              {/* Upload Area */}
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600 mb-2">
+                  Click to upload files or drag and drop
+                </p>
+                <p className="text-sm text-gray-500 mb-4">
+                  Maximum file size: 4MB per file • Supported formats: Images, PDF, DOC, DOCX, TXT
+                </p>
+                <input
+                  type="file"
+                  multiple
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  id="file-upload"
+                  accept="image/*,application/pdf,.doc,.docx,.txt"
+                />
+                <label
+                  htmlFor="file-upload"
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 cursor-pointer transition-colors"
+                >
+                  Browse Files
+                </label>
+              </div>
+
+              {/* Upload Errors */}
+              {uploadErrors.length > 0 && (
+                <div className="bg-red-50 border border-red-200 rounded-md p-3">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5 text-red-500" />
+                    <h4 className="text-sm font-medium text-red-800">Upload Errors</h4>
+                  </div>
+                  <ul className="mt-2 text-sm text-red-700">
+                    {uploadErrors.map((error, index) => (
+                      <li key={index}>• {error}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* File List */}
+              {formData.files.length > 0 && (
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium text-gray-700">
+                    Uploaded Files ({formData.files.length})
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {formData.files.map((fileObj) => (
+                      <div key={fileObj.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border">
+                        {fileObj.preview ? (
+                          <img
+                            src={fileObj.preview}
+                            alt={fileObj.name}
+                            className="w-12 h-12 object-cover rounded"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                            <FileText className="w-6 h-6 text-gray-500" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {fileObj.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {formatFileSize(fileObj.size)}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeFile(fileObj.id)}
+                          className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+        
           </div>
 
           {/* Personnel Information */}
@@ -445,8 +617,7 @@ export default function IncidentReportForm() {
               />
             </div>
           </div>
-
-          {/* Action Buttons */}
+            {/* Action Buttons */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex flex-col sm:flex-row gap-4 justify-between">
               <div className="text-sm text-gray-600">
@@ -474,6 +645,8 @@ export default function IncidentReportForm() {
               </div>
             </div>
           </div>
+
+      
         </div>
       </div>
     </div>

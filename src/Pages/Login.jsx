@@ -60,7 +60,7 @@ const Login = () => {
         <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Login</h1>
-            <p className="text-gray-600">Access your height work permit dashboard</p>
+            
           </div>
         </div>
 
