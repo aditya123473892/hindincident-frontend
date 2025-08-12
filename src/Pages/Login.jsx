@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { User, Lock, AlertTriangle } from 'lucide-react';
+import { User, Lock, AlertTriangle, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../AuthContext'; // <-- import this
+import { useAuth } from '../AuthContext';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     userId: '',
     password: '',
+    locationId: '',
   });
   const [errors, setErrors] = useState({});
   const [loginError, setLoginError] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth(); // <-- use this
+  const { login } = useAuth();
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -35,6 +36,9 @@ const Login = () => {
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
+    if (!formData.locationId) {
+      newErrors.locationId = 'Please select a location';
+    }
     return newErrors;
   };
 
@@ -45,7 +49,6 @@ const Login = () => {
       setErrors(validationErrors);
       return;
     }
-    // Use AuthContext login
     if (login(formData.userId, formData.password)) {
       navigate('/');
     } else {
@@ -60,7 +63,6 @@ const Login = () => {
         <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Login</h1>
-            
           </div>
         </div>
 
@@ -72,6 +74,8 @@ const Login = () => {
               {loginError}
             </div>
           )}
+
+          {/* User ID */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <User className="w-4 h-4 inline mr-1" />
@@ -91,6 +95,32 @@ const Login = () => {
             )}
           </div>
 
+          {/* Location Dropdown */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <MapPin className="w-4 h-4 inline mr-1" />
+              Location
+            </label>
+            <select
+              value={formData.locationId}
+              onChange={(e) => handleInputChange('locationId', e.target.value)}
+              className={`w-full px-3 py-2 border ${
+                errors.locationId ? 'border-red-300' : 'border-gray-300'
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            >
+              <option value="">-- Select Location --</option>
+              <option value="palwal">Palwal</option>
+              <option value="delhi">Delhi</option>
+              <option value="faridabad">Faridabad</option>
+              <option value="gurugram">Gurugram</option>
+              <option value="noida">Noida</option>
+            </select>
+            {errors.locationId && (
+              <p className="mt-1 text-sm text-red-600">{errors.locationId}</p>
+            )}
+          </div>
+
+          {/* Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <Lock className="w-4 h-4 inline mr-1" />
@@ -110,6 +140,7 @@ const Login = () => {
             )}
           </div>
 
+          {/* Submit */}
           <button
             onClick={handleSubmit}
             className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
@@ -118,7 +149,7 @@ const Login = () => {
           </button>
         </div>
 
-        {/* Additional Links */}
+        {/* Forgot Password */}
         <div className="mt-6 text-center">
           <a href="#" className="text-sm text-blue-600 hover:underline">
             Forgot Password?
